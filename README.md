@@ -18,7 +18,7 @@ List challenge me and my team (click the challenge and you will redirect to solv
 | OSINT | Lylera~ and Eclair | 3 solve out of 3 challenge | [click me](./path) |
 | PWN | Lylera~ and Eclair | 3 solve out of 3 challenge | [click me](./path) |
 | Welcome | Eclair | 1 solve out of 1 challenge | [click me](./path) |
-| Misc | Eclair | 2 solve out of 5 challenge | [click me](./path) |
+| Misc | Lylera~ and Eclair | 3 solve out of 5 challenge | [click me](./path) |
 | AI/ML Security | Lylera~ | 1 solve out of 1 challenge | [click me](./path) |
 | Cryptography | Eclair | 2 solve out of 4 challenge | [click me](./path) |
 | Steganography | Lylera~ | 1 solve out of 1 challenge | [click me](./path) |
