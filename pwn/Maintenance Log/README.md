@@ -42,18 +42,20 @@ Okey, first, let's take a look at `buffer address` reveal.<br>
 <img width="950" height="101" alt="image" src="https://github.com/user-attachments/assets/e6dec850-60f7-4838-aa54-d6be4a248e3b" />
 <br>
 As we can see, the `buffer address` is `0x7fffffffdbe0` and keep it in mind.<br>
-Now, let's check for the buffer where our second input is stored, the one who has one-byte-off overflow vulnerability.<br>
+Now, let's check for `rbp` register, what address they hold right now.<br>
 <br>
-<img width="841" height="125" alt="image" src="https://github.com/user-attachments/assets/ce4f4963-4c58-458f-a6af-a55084796418" /><br>
+<img width="1251" height="35" alt="image" src="https://github.com/user-attachments/assets/429f2a27-dc2e-41f1-8be2-d1a00f6a498a" /><br>
 <br>
-Okey, from the photo, that was `read()` function that will take care of our second input and stored in `0x7fffffffdbb0`, wait...Do you see something interesting?<br>
+Okey, from the photo, we know `rbp` register hold `0x7fffffffdbd0` and `0x7fffffffdbd0` filled with another address that is `0x7fffffffdc30`<br>
+Okey, so in summary we already have:
 
-* `first input address (buffer address leak)`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= `0x7fffffffdbe0`
-* `second input address (one-byte-off overflow vulnerability)`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= `0x7fffffffdbb0`
+* `first input address (buffer address leak)`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= `0x7fffffffdbe0`
+* `rbp register that hold`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= `0x7fffffffdc30`
 
-Yes..Exactly, their LSB or the lowest byte are the only different, the rest is same, so is it good news? OF COURSE<br>
-Okey, lemme tell you why that is good news, input function, `read(), scanf(), fgets(), etc` will put their first byte on LSB, since the difference of two address stack we just talked is only LSB and we have one-byte-off overflow, so we can change the LSB of address that `rbp` register right now hold.<br>
-We can change it into our address, so `rsp` will hold our address that's full of `ROPchain`.
+I have a bit clarification, so from the summary above, as we can see the difference is `12-bits` whereas our vulnerable only allow us to overwrite `8-LSB-bits` or `1 bytes`, so should be it was unexploitable, but hold on, it occured because we ispect in from `GDB - pwndbg`, what does it mean?<br>
+Lemme tell you, `GDB` add up some `env` argument that consume a few byte of stack address, that's why, if we deal with exploitation that need precision, it can be confusing when we use `GDB`, but it's okay, actually, in remote, the difference between what `rbp` register hold and `buffer address leak` only `LSB 8-bits` or `1-byte`.<br>
+<br>
+Don't worry, in the end, I will show you all, it's work or not.<br>
 
 #### Exploit
 Because we already know the flow, we just need to build our payload.<br>
@@ -104,5 +106,12 @@ p.sendlineafter(b'Tagging operator: ', payload_2)
 
 p.interactive()
 ```
+
+Okey, that's my full exploitation, and here's the proof.<br>
+<br>
+<img width="793" height="442" alt="image" src="https://github.com/user-attachments/assets/c18841d1-f653-4a0c-89d5-35eaa29e1033" /><br>
+<br>
+Hell yeah, as you can see.
+
 <br>
 That's my full payload
